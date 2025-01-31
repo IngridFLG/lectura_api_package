@@ -1,6 +1,6 @@
 name: lectura_api_package
 description: Un paquete para interactuar con la Fake Store API.
-homepage: https://github.com/tu-usuario/lectura_api_package
+homepage: https://github.com/IngridFLG/lectura_api_package
 version: 1.0.0+1
 
 environment:

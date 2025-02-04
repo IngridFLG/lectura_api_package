@@ -18,6 +18,15 @@ class ApiClient {
     );
   }
 
+  Future<http.Response> put(String endpoint, Map<String, dynamic> body) async {
+    final url = Uri.parse('$_baseUrl$endpoint');
+    return await http.put(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(body),
+    );
+  }
+
   Future<http.Response> delete(String endpoint) async {
     final url = Uri.parse('$_baseUrl$endpoint');
     return await http.delete(url);

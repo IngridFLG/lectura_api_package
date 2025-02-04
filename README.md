@@ -1,16 +1,33 @@
 
 # 📦 Lectura API Package
 
-**Lectura API Package** es un paquete diseñado para interactuar con la API [Fake Store](https://fakestoreapi.com), facilitando la obtención, adición y eliminación de productos en una tienda en línea ficticia. Este paquete es ideal para aprender sobre el consumo de APIs REST y el manejo de datos en Flutter y Dart.
+**Lectura API Package** es un paquete diseñado para interactuar con la API [Fake Store](https://fakestoreapi.com), facilitando la gestión de productos, carritos y usuarios en una tienda en línea ficticia. Este paquete es ideal para aprender sobre el consumo de APIs REST y el manejo de datos en Flutter y Dart.
 
 ---
 
 ## 🚀 Funcionalidades
 
-- **Obtener productos:** Recupera una lista de productos desde la API con todos sus detalles.
-- **Agregar productos:** Permite agregar nuevos productos a la base de datos ficticia.
-- **Eliminar productos:** Elimina productos de manera simulada a través de la API.
-- **Manejo de errores:** Implementación robusta del manejo de errores con el tipo `Either` de la biblioteca `dartz`.
+- **Gestión de productos**:
+  - Obtener todos los productos.
+  - Obtener un producto por su ID.
+  - Obtener productos con límites y ordenados.
+  - Agregar, actualizar y eliminar productos.
+
+- **Gestión de carritos**:
+  - Obtener todos los carritos.
+  - Obtener un carrito por ID.
+  - Filtrar carritos por límite o rango de fechas.
+  - Agregar, actualizar y eliminar carritos.
+  - Obtener carritos de un usuario específico.
+
+- **Gestión de usuarios**:
+  - Obtener todos los usuarios.
+  - Obtener un usuario por ID.
+  - Registrar, actualizar y eliminar usuarios.
+  - Inicio de sesión con autenticación.
+
+- **Manejo de errores**:
+  - Uso del tipo `Either` de la biblioteca `dartz` para controlar errores y respuestas exitosas.
 
 ---
 
@@ -37,155 +54,202 @@ flutter pub get
 
 ### 1. **Importar el Paquete**
 
-Para usar este paquete, importa los archivos necesarios en tu proyecto:
+Importa las clases necesarias desde el paquete:
 
 ```dart
 import 'package:lectura_api_package/fake_store_package.dart';
 ```
 
-### 2. **Configurar `ApiService`**
+### 2. **Gestión de Productos**
 
-Inicializa la clase `ApiService` para interactuar con la API:
-
-```dart
-final apiService = ApiService();
-```
-
-### 3. **Obtener Productos**
-
-Llama al método `fetchProducts` para obtener la lista de productos desde la API:
+#### Obtener todos los productos
 
 ```dart
-final result = await apiService.fetchProducts();
+final productService = ProductService();
+
+final result = await productService.fetchProducts();
 result.fold(
-  (error) => print('Error al obtener productos: $error'),
-  (products) {
-    for (var product in products) {
-      print('Producto: ${product.title}, Precio: \$${product.price}');
-    }
-  },
+  (error) => print('Error: $error'),
+  (products) => products.forEach((product) => print('Producto: ${product.title}')),
 );
 ```
 
-### 4. **Agregar un Producto**
-
-Para agregar un producto, crea una instancia del modelo `Product` y utiliza el método `addProduct`:
+#### Agregar un producto
 
 ```dart
 final newProduct = Product(
-  id: 0, // La API genera automáticamente un ID.
-  title: 'Nuevo Producto',
-  price: 99.99,
+  id: 0, // La API genera automáticamente un ID
+  title: 'Producto Nuevo',
+  price: 59.99,
   category: 'Categoría Prueba',
-  description: 'Descripción del producto de prueba',
+  description: 'Descripción del producto nuevo',
   image: 'https://via.placeholder.com/150',
 );
 
-final result = await apiService.addProduct(newProduct);
+final result = await productService.addProduct(newProduct);
 result.fold(
-  (error) => print('Error al agregar producto: $error'),
+  (error) => print('Error: $error'),
   (product) => print('Producto agregado: ${product.title}'),
 );
 ```
 
-### 5. **Eliminar un Producto**
-
-Llama al método `deleteProduct` proporcionando el ID del producto que deseas eliminar:
+#### Actualizar un producto
 
 ```dart
-final result = await apiService.deleteProduct(1); // Cambia el ID según sea necesario.
+final updatedProduct = Product(
+  id: 1, // ID del producto existente
+  title: 'Producto Actualizado',
+  price: 79.99,
+  category: 'Categoría Actualizada',
+  description: 'Nueva descripción del producto',
+  image: 'https://via.placeholder.com/150',
+);
+
+final result = await productService.updateProduct(1, updatedProduct);
 result.fold(
-  (error) => print('Error al eliminar producto: $error'),
+  (error) => print('Error: $error'),
+  (product) => print('Producto actualizado: ${product.title}'),
+);
+```
+
+#### Eliminar un producto
+
+```dart
+final result = await productService.deleteProduct(1);
+result.fold(
+  (error) => print('Error: $error'),
   (product) => print('Producto eliminado: ${product.title}'),
+);
+```
+
+### 3. **Gestión de Carritos**
+
+#### Obtener todos los carritos
+
+```dart
+final cartService = CartService();
+
+final result = await cartService.fetchAllCarts();
+result.fold(
+  (error) => print('Error: $error'),
+  (carts) => carts.forEach((cart) => print('Carrito ID: ${cart.id}')),
+);
+```
+
+#### Agregar productos a un carrito
+
+```dart
+final cartItems = [
+  CartItem(productId: 1, quantity: 2),
+  CartItem(productId: 2, quantity: 1),
+];
+
+final result = await cartService.addToCart(1, cartItems);
+result.fold(
+  (error) => print('Error: $error'),
+  (cart) => print('Carrito actualizado: ${cart.id}'),
+);
+```
+
+#### Actualizar un carrito
+
+```dart
+final updatedItems = [
+  CartItem(productId: 1, quantity: 3),
+  CartItem(productId: 3, quantity: 5),
+];
+
+final result = await cartService.updateCart(1, updatedItems);
+result.fold(
+  (error) => print('Error: $error'),
+  (cart) => print('Carrito actualizado: ${cart.id}'),
+);
+```
+
+#### Eliminar un carrito
+
+```dart
+final result = await cartService.deleteCart(1);
+result.fold(
+  (error) => print('Error: $error'),
+  (message) => print(message),
+);
+```
+
+### 4. **Gestión de Usuarios**
+
+#### Registrar un nuevo usuario
+
+```dart
+final userService = UserService();
+
+final newUser = User(
+  email: 'usuario@ejemplo.com',
+  username: 'usuario123',
+  password: 'claveSegura',
+  phone: '1234567890',
+  firstName: 'Juan',
+  lastName: 'Pérez',
+  city: 'Ciudad Ejemplo',
+  street: 'Calle Ejemplo',
+  number: 123,
+  zipcode: '45678',
+);
+
+final result = await userService.registerUser(newUser);
+result.fold(
+  (error) => print('Error: $error'),
+  (user) => print('Usuario registrado: ${user.username}'),
+);
+```
+
+#### Iniciar sesión
+
+```dart
+final result = await userService.login('usuario123', 'claveSegura');
+result.fold(
+  (error) => print('Error: $error'),
+  (token) => print('Token recibido: $token'),
 );
 ```
 
 ---
 
-## 🛠️ Detalles Técnicos
+## 🛠️ Clases Principales
 
-### **Clases Principales**
+### **`ProductService`**
 
-#### `ApiService`
+Maneja las operaciones relacionadas con productos.
 
-Es la clase principal que gestiona las interacciones con la API Fake Store.
+| **Método**              | **Descripción**                                  |
+|--------------------------|--------------------------------------------------|
+| `fetchProducts()`        | Obtiene todos los productos.                    |
+| `addProduct(Product)`    | Agrega un nuevo producto.                       |
+| `updateProduct(int, Product)` | Actualiza un producto existente.          |
+| `deleteProduct(int)`     | Elimina un producto por ID.                     |
 
-| **Método**          | **Descripción**                                    |
-|----------------------|----------------------------------------------------|
-| `fetchProducts()`    | Obtiene una lista de productos desde la API.       |
-| `addProduct()`       | Agrega un nuevo producto a través de la API.       |
-| `deleteProduct(int)` | Elimina un producto de la API mediante su ID.      |
+### **`CartService`**
 
-#### `Product`
+Maneja las operaciones relacionadas con carritos.
 
-Modelo de datos que representa un producto.
+| **Método**              | **Descripción**                                  |
+|--------------------------|--------------------------------------------------|
+| `fetchAllCarts()`        | Obtiene todos los carritos.                     |
+| `addToCart(int, List<CartItem>)` | Agrega productos a un carrito.          |
+| `updateCart(int, List<CartItem>)` | Actualiza productos en un carrito.     |
+| `deleteCart(int)`        | Elimina un carrito por ID.                      |
 
-| **Campo**       | **Tipo**  | **Descripción**                              |
-|------------------|-----------|----------------------------------------------|
-| `id`            | `int`     | Identificador único del producto.            |
-| `title`         | `String`  | Nombre del producto.                         |
-| `price`         | `double`  | Precio del producto.                         |
-| `category`      | `String`  | Categoría del producto.                      |
-| `description`   | `String`  | Descripción detallada del producto.          |
-| `image`         | `String`  | URL de la imagen del producto.               |
+### **`UserService`**
 
----
+Maneja las operaciones relacionadas con usuarios.
 
-## 📑 Ejemplo Completo
-
-Este es un ejemplo completo que utiliza todas las funcionalidades del paquete:
-
-```dart
-import 'package:lectura_api_package/fake_store_package.dart';
-
-void main() async {
-  final apiService = ApiService();
-
-  // Obtener productos
-  print('--- Lista de Productos ---');
-  final productsResult = await apiService.fetchProducts();
-  productsResult.fold(
-    (error) => print('Error al obtener productos: $error'),
-    (products) {
-      for (var product in products) {
-        print('Producto: ${product.title}, Precio: \$${product.price}');
-      }
-    },
-  );
-
-  // Agregar un producto
-  print('--- Agregar Producto ---');
-  final newProduct = Product(
-    id: 0,
-    title: 'Producto de Prueba',
-    price: 99.99,
-    category: 'Categoría Prueba',
-    description: 'Descripción de producto de prueba',
-    image: 'https://via.placeholder.com/150',
-  );
-  final addResult = await apiService.addProduct(newProduct);
-  addResult.fold(
-    (error) => print('Error al agregar producto: $error'),
-    (product) => print('Producto Agregado: ${product.title}, ID: ${product.id}'),
-  );
-
-  // Eliminar un producto
-  print('--- Eliminar Producto ---');
-  final deleteResult = await apiService.deleteProduct(1); // Cambia el ID según sea necesario.
-  deleteResult.fold(
-    (error) => print('Error al eliminar producto: $error'),
-    (product) => print('Producto Eliminado: ${product.title}, ID: ${product.id}'),
-  );
-}
-```
-
----
-
-## 🌟 Características Adicionales
-
-- **Manejo de errores con `Either`:** Permite controlar tanto respuestas exitosas (`Right`) como errores (`Left`) de forma funcional y predecible.
-- **Fácil Extensibilidad:** Puedes agregar más métodos para interactuar con otros endpoints de la API Fake Store.
-- **Documentación Clara:** Este paquete incluye ejemplos detallados para facilitar su uso.
+| **Método**              | **Descripción**                                  |
+|--------------------------|--------------------------------------------------|
+| `fetchAllUsers()`        | Obtiene todos los usuarios.                     |
+| `registerUser(User)`     | Registra un nuevo usuario.                      |
+| `updateUser(int, User)`  | Actualiza un usuario existente.                 |
+| `deleteUser(int)`        | Elimina un usuario por ID.                      |
+| `login(String, String)`  | Inicia sesión con credenciales.                 |
 
 ---
 

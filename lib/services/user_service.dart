@@ -39,8 +39,16 @@ class UserService {
   // Registrar un nuevo usuario
   Future<Either<String, User>> registerUser(User user) async {
     try {
+      // Log antes de la petición
+      print('Enviando datos de registro: ${user.toJson()}');
+
       final response = await _apiClient.post('/users', user.toJson());
-      if (response.statusCode == 200) {
+
+      // Log de la respuesta
+      print('Respuesta de la API: ${response.body}');
+      print('Código de estado: ${response.statusCode}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
         return Right(User.fromJson(json.decode(response.body)));
       } else {
         return Left('Error al registrar usuario: ${response.statusCode}');

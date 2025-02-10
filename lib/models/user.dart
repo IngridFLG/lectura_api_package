@@ -29,24 +29,24 @@ class User {
     this.longitude,
   });
 
-  // Factory constructor para crear un User desde JSON
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'],
-      email: json['email'],
-      username: json['username'],
-      password: json['password'] ?? '',
-      phone: json['phone'],
-      firstName: json['name']['firstname'],
-      lastName: json['name']['lastname'],
-      city: json['address']['city'],
-      street: json['address']['street'],
-      number: json['address']['number'],
-      zipcode: json['address']['zipcode'],
-      latitude: json['address']['geolocation']['lat'],
-      longitude: json['address']['geolocation']['long'],
-    );
-  }
+factory User.fromJson(Map<String, dynamic> json) {
+  return User(
+    id: json['id'],
+    email: json['email'] ?? '',
+    username: json['username'] ?? '',
+    password: json['password'] ?? '',
+    phone: json['phone'] ?? '',
+    firstName: json['name']?['firstname'] ?? '',
+    lastName: json['name']?['lastname'] ?? '',
+    city: json['address']?['city'] ?? '',
+    street: json['address']?['street'] ?? '',
+    number: json['address']?['number'] ?? 0,
+    zipcode: json['address']?['zipcode'] ?? '',
+    latitude: json['address']?['geolocation']?['lat']?.toString() ?? '0.0',
+    longitude: json['address']?['geolocation']?['long']?.toString() ?? '0.0',
+  );
+}
+
 
   // Método para convertir User a JSON
   Map<String, dynamic> toJson() {

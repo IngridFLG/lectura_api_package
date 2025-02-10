@@ -10,8 +10,8 @@ class User {
   final String street;
   final int number;
   final String zipcode;
-  final double? latitude;
-  final double? longitude;
+  final String? latitude;
+  final String? longitude;
 
   const User({
     this.id,
@@ -29,7 +29,7 @@ class User {
     this.longitude,
   });
 
-  // Factory constructor to create a User from JSON
+  // Factory constructor para crear un User desde JSON
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'],
@@ -43,16 +43,12 @@ class User {
       street: json['address']['street'],
       number: json['address']['number'],
       zipcode: json['address']['zipcode'],
-      latitude: json['address']['geolocation']['lat'] != null
-          ? double.parse(json['address']['geolocation']['lat'])
-          : null,
-      longitude: json['address']['geolocation']['long'] != null
-          ? double.parse(json['address']['geolocation']['long'])
-          : null,
+      latitude: json['address']['geolocation']['lat'],
+      longitude: json['address']['geolocation']['long'],
     );
   }
 
-  // Method to convert a User to JSON
+  // Método para convertir User a JSON
   Map<String, dynamic> toJson() {
     return {
       'email': email,
@@ -69,8 +65,8 @@ class User {
         'number': number,
         'zipcode': zipcode,
         'geolocation': {
-          'lat': latitude?.toString(),
-          'long': longitude?.toString(),
+          'lat': latitude,
+          'long': longitude,
         },
       },
     };

@@ -37,25 +37,16 @@ class UserService {
   }
 
   // Registrar un nuevo usuario
-  Future<Either<String, User>> registerUser(User user) async {
+  Future<Either<String, Map<String, dynamic>>> registerUser(User user) async {
     try {
-      print('Enviando datos de registro: ${user.toJson()}');
 
       final response = await _apiClient.post('/users', user.toJson());
 
-      print('Respuesta de la API: ${response.body}');
-      print('Código de estado: ${response.statusCode}');
-
       if (response.statusCode == 200 || response.statusCode == 201) {
         final Map<String, dynamic> responseData = json.decode(response.body);
-
-        if (!responseData.containsKey('id')) {
-          return Left('Error en la API: Respuesta inesperada.');
-        }
-
-        return Right(User.fromJson(responseData));
+        return Right(responseData);
       } else {
-        return Left('Error al registrar usuario: ${response.statusCode}');
+        return Left('Error al registrar usuario: Código ${response.statusCode}');
       }
     } catch (e) {
       return Left('Error de red: $e');

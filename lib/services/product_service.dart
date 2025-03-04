@@ -112,4 +112,36 @@ class ProductService {
       return Left('Error de red: $e');
     }
   }
+
+
+  /// 🔹 Obtener todas las categorías
+  Future<Either<String, List<String>>> fetchCategories() async {
+    try {
+      final response = await _apiClient.get('/products/categories');
+      if (response.statusCode == 200) {
+        final List categories = json.decode(response.body);
+        return Right(categories.map((category) => category.toString()).toList());
+      } else {
+        return Left('Error al obtener categorías: ${response.statusCode}');
+      }
+    } catch (e) {
+      return Left('Error de red: $e');
+    }
+  }
+
+  /// 🔹 Obtener productos de una categoría específica
+  Future<Either<String, List<Product>>> fetchProductsByCategory(String category) async {
+    try {
+      final response = await _apiClient.get('/products/category/$category');
+      if (response.statusCode == 200) {
+        final List data = json.decode(response.body);
+        final products = data.map((item) => Product.fromJson(item)).toList();
+        return Right(products);
+      } else {
+        return Left('Error al obtener productos de la categoría: ${response.statusCode}');
+      }
+    } catch (e) {
+      return Left('Error de red: $e');
+    }
+  }
 }
